@@ -1,4 +1,4 @@
-name: FAS WEB CI
+name: PAY-UI CI
 
 on:
   pull_request:
@@ -15,10 +15,10 @@ defaults:
     working-directory: .
 
 jobs:
-  fas-ui-ci:
+  pay-ui-ci:
     uses: bcgov/bcregistry-sre/.github/workflows/frontend-ci.yaml@main
     with:
       node_version: "20.5.1"
-      app_name: "fas-ui"
+      app_name: "pay-ui"
       working_directory: "."
       codecov_flag: "payweb"
