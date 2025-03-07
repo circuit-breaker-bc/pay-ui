@@ -19,7 +19,7 @@ on:
         - prod
 
 jobs:
-  fas-ui-cd:
+  pay-ui-cd:
     uses: bcgov/bcregistry-sre/.github/workflows/frontend-cd.yaml@main
     with:
       target: ${{ inputs.target }}
