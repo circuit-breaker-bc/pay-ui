@@ -1,4 +1,4 @@
-name: FAS-UI GCP CD
+name: PAY-UI GCP CD
 
 on:
   push:
