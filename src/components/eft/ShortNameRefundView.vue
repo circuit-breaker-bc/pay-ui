@@ -18,6 +18,15 @@
             <v-col class="col-12 col-sm-12 ">
               <v-row>
                 <v-col class="col-6 col-sm-3 font-weight-bold">
+                  Refund Method
+                </v-col>
+                <v-col class="pl-0">
+                  {{ refundDetails.refundMethod }}
+                </v-col>
+              </v-row>
+
+              <v-row>
+                <v-col class="col-6 col-sm-3 font-weight-bold">
                   Short Name
                 </v-col>
                 <v-col class="pl-0">
@@ -113,7 +122,7 @@
 
               <v-row>
                 <v-col class="col-6 col-sm-3 font-weight-bold">
-                  Email
+                  Entity Email
                 </v-col>
                 <v-col
                   v-if="readOnly"
@@ -201,8 +210,49 @@
             <v-col class="col-6 col-sm-3 font-weight-bold">
               Refund Status
             </v-col>
-            <v-col class="pl-0">
-              {{ getEFTRefundTypeDescription(refundDetails.status) }}
+            <v-col class="pl-0 d-flex">
+              <v-chip
+                small
+                label
+                class="item-chip"
+                v-if="refundDetails.chequeStatus === chequeRefundCodes.CHEQUE_UNDELIVERABLE"
+                color='error'
+              >
+                {{ getEFTRefundStatusDescription(refundDetails) }}
+              </v-chip>
+              <span v-else>{{ getEFTRefundStatusDescription(refundDetails) }}</span>
+              <v-menu
+                close-on-content-click
+                offset-y
+                v-model="statusIsExpanded"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    text
+                    v-bind="attrs"
+                    v-on="on"
+                    small
+                    class="hover-btn ml-4"
+                    color="primary"
+                    @click="expendStatus"
+                    style="align-items: flex-start;"
+                  >
+                    Update Status
+                    <v-icon dense>{{ statusIsExpanded ? 'mdi-menu-up' : 'mdi-menu-down' }}</v-icon>
+                  </v-btn>
+                </template>
+                <v-list
+                class="status-list m-0 p-0"
+                >
+                  <v-list-item
+                      v-for="status in chequeStatusList"
+                      :key="status.code"
+                      @click="updateChequeRefundStatus(status.code)"
+                    >
+                    <v-list-item-title>{{ status.text }}</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
             </v-col>
           </v-row>
         </v-card-text>
@@ -247,11 +297,12 @@
 import { EFTRefund, ShortNameDetails } from '@/models/short-name'
 import { computed, defineComponent, onMounted, reactive, ref, toRefs, watch } from '@vue/composition-api'
 import CommonUtils from '@/util/common-util'
-import { EFTRefundType } from '@/util/constants'
+import { EFTRefundStatus, ChequeRefundStatus, chequeRefundCodes } from '@/util/constants'
 import { EftRefundRequest } from '@/models/refund'
 import PaymentService from '@/services/payment.services'
 import ShortNameUtils from '@/util/short-name-util'
 import { useOrgStore } from '@/store/org'
+import { useShortNameTable } from '@/composables/eft/short-name-table-factory'
 
 export default defineComponent({
   name: 'ShortNameRefundView',
@@ -265,7 +316,7 @@ export default defineComponent({
       default: undefined
     }
   },
-  setup (props, { root }) {
+  setup (props, { emit, root }) {
     const dateDisplayFormat = 'MMM DD, YYYY h:mm A [Pacific Time]'
     const state = reactive({
       shortNameDetails: {} as ShortNameDetails,
@@ -277,6 +328,7 @@ export default defineComponent({
       staffComment: '',
       isLoading: false,
       readOnly: false,
+      statusIsExpanded: false,
       refundAmountRules: [
         v => !!v || 'Refund Amount is required',
         v => parseFloat(v) > 0 || 'Refund Amount must be greater than zero',
@@ -303,13 +355,17 @@ export default defineComponent({
       isSubmitted: false
     })
     const orgStore = useOrgStore()
-
+    const { patchEFTRefund } = useShortNameTable(state, emit)
     function isApproved () {
-      return state.refundDetails?.status === EFTRefundType.APPROVED
+      return state.refundDetails?.status === EFTRefundStatus.APPROVED
+    }
+
+    const expendStatus = () => {
+      state.statusIsExpanded = !state.statusIsExpanded
     }
 
     function isDeclined () {
-      return state.refundDetails?.status === EFTRefundType.DECLINED
+      return state.refundDetails?.status === EFTRefundStatus.DECLINED
     }
 
     onMounted(async () => {
@@ -403,6 +459,10 @@ export default defineComponent({
       return state.isSubmitted || state.isLoading
     })
 
+    const chequeStatusList = computed(() =>
+      ChequeRefundStatus.filter(s => s.code !== state.refundDetails.chequeStatus && s.display)
+    )
+
     watch(() => state.isSubmitted, (newVal) => {
       if (newVal) {
         buttonText.value = 'Approved'
@@ -412,6 +472,18 @@ export default defineComponent({
         buttonColor.value = 'primary'
       }
     })
+
+    async function updateChequeRefundStatus (status: string) {
+      try {
+        const response = await patchEFTRefund(state.refundDetails.id, status)
+        if (response?.data) {
+          await loadShortnameRefund()
+        }
+      } catch (error) {
+        console.error('Patch EFT short name refund failed', error)
+        throw error
+      }
+    }
 
     return {
       ...toRefs(state),
@@ -423,12 +495,16 @@ export default defineComponent({
       submitRefundRequest,
       buttonText,
       buttonColor,
+      expendStatus,
       handleCancelButton,
       getShortNameTypeDescription: ShortNameUtils.getShortNameTypeDescription,
-      getEFTRefundTypeDescription: ShortNameUtils.getEFTRefundTypeDescription,
+      getEFTRefundStatusDescription: ShortNameUtils.getEFTRefundStatusDescription,
       formatCurrency: CommonUtils.formatAmount,
       formatDate: CommonUtils.formatUtcToPacificDate,
-      dateDisplayFormat
+      dateDisplayFormat,
+      chequeStatusList,
+      chequeRefundCodes,
+      updateChequeRefundStatus
     }
   }
 })
@@ -447,5 +523,12 @@ export default defineComponent({
 }
 .account-alert__info {
   flex: 1 1 auto;
+}
+.hover-btn {
+  height: fit-content;
+  font-size: 16px !important;
+}
+.item-chip {
+  font-size: 16px !important;
 }
 </style>
