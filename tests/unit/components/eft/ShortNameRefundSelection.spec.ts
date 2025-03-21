@@ -4,6 +4,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuetify from 'vuetify'
 import sinon from 'sinon'
+import { EFTRefundMethod, RouteNames } from '@/util/constants'
 
 Vue.use(Vuetify)
 Vue.use(VueRouter)
@@ -51,7 +52,7 @@ describe('ShortNameRefundSelection.vue', () => {
     const push = sinon.stub(wrapper.vm.$router, 'push')
     await wrapper.find('[data-test="btn-refund-selection-cancel"]').trigger('click')
 
-    expect(push.calledWith({ name: 'shortnamedetails', params: { shortNameId: 1 } })).toBe(true)
+    expect(push.calledWith({ name: RouteNames.SHORTNAME_DETAILS, params: { shortNameId: 1 } })).toBe(true)
     push.restore()
   })
 
@@ -61,7 +62,11 @@ describe('ShortNameRefundSelection.vue', () => {
     await wrapper.vm.$nextTick()
     await wrapper.find('[data-test="btn-refund-selection-next"]').trigger('click')
 
-    expect(push.calledWith({ name: 'shortnamerefund', params: { shortNameId: 1 } })).toBe(true)
+    expect(push.calledWith({
+      name: RouteNames.SHORTNAME_REFUND,
+      params: { shortNameId: 1 },
+      query: { refundMethod: EFTRefundMethod.EFT }
+    })).toBe(true)
     push.restore()
   })
 
@@ -71,7 +76,11 @@ describe('ShortNameRefundSelection.vue', () => {
     await wrapper.vm.$nextTick()
     await wrapper.find('[data-test="btn-refund-selection-next"]').trigger('click')
 
-    expect(push.calledWith({ name: 'shortnamerefundcheque', params: { shortNameId: 1 } })).toBe(true)
+    expect(push.calledWith({
+      name: RouteNames.SHORTNAME_REFUND,
+      params: { shortNameId: 1 },
+      query: { refundMethod: EFTRefundMethod.CHEQUE }
+    })).toBe(true)
     push.restore()
   })
 

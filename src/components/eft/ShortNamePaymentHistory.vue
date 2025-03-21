@@ -154,9 +154,9 @@
 <script lang="ts">
 import { Ref, defineComponent, nextTick, reactive, ref, toRefs, watch } from '@vue/composition-api'
 import {
-  chequeRefundCodes,
+  chequeRefundCodes, ChequeRefundStatus,
   ConfirmationType,
-  EFTRefundSelectionType,
+  EFTRefundMethod, RouteNames,
   ShortNameHistoryType,
   ShortNameHistoryTypeDescription,
   ShortNamePaymentActions,
@@ -316,10 +316,8 @@ export default defineComponent({
         case ShortNameHistoryType.SN_REFUND_PENDING_APPROVAL:
           return 'Refund Requested'
         case ShortNameHistoryType.SN_REFUND_APPROVED:
-          if (item.eftRefundChequeStatus === chequeRefundCodes.CHEQUE_UNDELIVERABLE) {
-            return chequeRefundCodes.CHEQUE_UNDELIVERABLE
-          } else if (item.eftRefundMethod === EFTRefundSelectionType.CHEQUE) {
-            return chequeRefundCodes.PROCESSED
+          if (item.eftRefundChequeStatus) {
+            return ChequeRefundStatus.find(status => status.code === item.eftRefundChequeStatus)?.text
           }
           return 'Request Approved'
         case ShortNameHistoryType.SN_REFUND_DECLINED:
@@ -357,9 +355,9 @@ export default defineComponent({
       if ([ShortNameHistoryType.SN_REFUND_PENDING_APPROVAL,
         ShortNameHistoryType.SN_REFUND_APPROVED,
         ShortNameHistoryType.SN_REFUND_DECLINED].includes(item.transactionType)) {
-        return item.eftRefundMethod === EFTRefundSelectionType.CHEQUE
+        return item.eftRefundMethod === EFTRefundMethod.CHEQUE
           ? 'Refund by Cheque'
-          : 'Refund by EFT'
+          : 'Refund by Direct Deposit'
       }
 
       return ShortNameHistoryTypeDescription[item.transactionType]
@@ -368,7 +366,7 @@ export default defineComponent({
     function viewRefundDetails (id: string) {
       if (!id) return
       root.$router?.push({
-        name: 'shortnamerefund',
+        name: RouteNames.SHORTNAME_REFUND,
         params: {
           eftRefundId: id
         }
