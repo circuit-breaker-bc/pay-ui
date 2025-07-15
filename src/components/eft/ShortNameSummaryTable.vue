@@ -286,7 +286,7 @@ export default defineComponent({
         'creditsRemaining',
         'Unsettled Amount',
         'text',
-        'Unsettled Amount',
+        'Unsettled Amount <i class="v-icon notranslate mdi mdi-arrow-down theme--light"></i>',
         creditsRemaining,
         true,
         '215px',
