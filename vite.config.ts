@@ -127,6 +127,18 @@ export default defineConfig(({ mode }) => {
         if (log.includes('Download the Vue Devtools extension')) {
           return false
         }
+      },
+      alias: {
+        '@bcrs-shared-components/mixins': path.resolve(__dirname, './tests/unit/test-data/mock-mixins.ts')
+      },
+      server: {
+        deps: {
+          inline: [
+            /@bcrs-shared-components\/.*/,
+            /^@bcrs-shared-components$/,
+            'sbc-common-components'
+          ]
+        }
       }
     },
     optimizeDeps: {
