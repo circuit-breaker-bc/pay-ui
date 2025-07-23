@@ -21,8 +21,8 @@ headache in the long term. Depending on the circumstances, there are various alt
 
 export const useAppStore = defineStore('app', () => {
   const state = reactive({
-    errorMessage: '', 
-    refreshKey: 0, 
+    errorMessage: '',
+    refreshKey: 0,
     loading: true
   })
 
