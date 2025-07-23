@@ -107,9 +107,7 @@ export default defineConfig(({ mode }) => {
         '@bcrs-shared-components/mixins': path.resolve(__dirname, './node_modules/@bcrs-shared-components/mixins/index.ts'),
         '@bcrs-shared-components/enums': path.resolve(__dirname, './node_modules/@bcrs-shared-components/enums/index.ts'),
         '@bcrs-shared-components/staff-comments': path.resolve(__dirname, './node_modules/@bcrs-shared-components/staff-comments/index.ts'),
-        '@bcrs-shared-components/interfaces': path.resolve(__dirname, './node_modules/@bcrs-shared-components/interfaces/index.ts'),
-        // Fix for module decorator unit tests fail
-        'vuex-module-decorators': path.resolve(__dirname, './node_modules/vuex-module-decorators/dist/esm/index.js')
+        '@bcrs-shared-components/interfaces': path.resolve(__dirname, './node_modules/@bcrs-shared-components/interfaces/index.ts')
       },
       extensions: ['.js', '.ts', '.vue', '.json', '.css', '.mjs', '.jsx', 'tsx']
     },
