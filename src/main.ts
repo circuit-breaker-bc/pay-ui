@@ -16,7 +16,7 @@ import Vuelidate from 'vuelidate'
 import can from '@/directives/can'
 import initializeI18n from './plugins/i18n'
 import router from './router'
-import { getVuexStore, getPiniaStore } from './store'
+import { getPiniaStore } from './store'
 import vuetify from './plugins/vuetify'
 
 Vue.config.productionTip = false
@@ -57,7 +57,7 @@ async function syncSession () {
 
   // Initialize the token to force login the user
   if (!CommonUtils.isSigningIn() && !CommonUtils.isSigningOut()) {
-    await KeyCloakService.initializeToken(null, true, true).then(() => {}).catch(err => {
+    await KeyCloakService.initializeToken(null, true).then(() => {}).catch(err => {
       if (err?.message !== 'NOT_AUTHENTICATED') {
         throw err
       }
@@ -75,13 +75,12 @@ function removeServiceWorkers() {
   }
 }
 // setting to window to avoid library build undefined issue for global loader
-(window as any).fasStore = getVuexStore
+const piniaStore = getPiniaStore()
 
 function renderVue () {
   new Vue({
     router,
-    store: getVuexStore,
-    pinia: getPiniaStore(),
+    pinia: piniaStore,
     vuetify,
     i18n,
     render: h => h(App)

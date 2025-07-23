@@ -13,7 +13,7 @@ export function useCreateRoutingSlipChequePayment () {
 
   // watch any changes and update to store
   watch(chequeList, () => {
-    // to avoid vuex array, send clone copy of object
+    // send clone copy of object
     chequePayment.value = (JSON.parse(JSON.stringify(chequeList.value)))
   }, { deep: true })
 

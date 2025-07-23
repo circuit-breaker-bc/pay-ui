@@ -5,7 +5,7 @@ import { useRoutingSlip } from '../useRoutingSlip'
 
 export function useDailyReport () {
   const { getDailyReportByDate } = useRoutingSlip()
-  // vuex action and state
+
   const selectedDate = ref<string>('')
   const showCalendar = ref<boolean>(false)
   const isDownloading = ref<boolean>(false)

@@ -11,7 +11,7 @@ import { useIndicators } from '../useIndicators'
 export function useLoader () {
   const { isThereActiveCalls } = useIndicators()
   const isLoading = ref<boolean>(false)
-  // vuex getters
+
   function changeLoadingStatus (isLoadingStatus: boolean): void {
     isLoading.value = isLoadingStatus
   }

@@ -9,7 +9,7 @@
       <!-- common header -->
       <SbcHeader
         class="flex-column"
-        :key="$store.state.refreshKey"
+        :key="appStore.refreshKey"
         :inAuth="false"
         :show-product-selector="false"
         :redirectUrlLoginFail="logoutUrl"
@@ -43,6 +43,7 @@ import SbcHeader from 'sbc-common-components/src/components/SbcHeader.vue'
 import SbcLoader from 'sbc-common-components/src/components/SbcLoader.vue'
 import { useLoader, useErrorAlert } from './composables/common'
 import BreadCrumb from '@/components/common/BreadCrumb.vue'
+import { useAppStore } from '@/store/app'
 
 export default defineComponent({
   components: {
@@ -54,6 +55,7 @@ export default defineComponent({
     BreadCrumb
   },
   setup () {
+    const appStore = useAppStore()
     const { isThereActiveCalls } = useLoader()
     const { hasCallFailed } = useErrorAlert()
     const aboutText = computed<string>(() => {
@@ -67,6 +69,7 @@ export default defineComponent({
     })
 
     return {
+      appStore,
       hasCallFailed,
       isThereActiveCalls,
       aboutText,
