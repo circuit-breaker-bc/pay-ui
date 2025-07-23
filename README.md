@@ -1,6 +1,6 @@
 [![Lifecycle:Stable](https://img.shields.io/badge/Lifecycle-Stable-97ca00)](https://github.com/bcgov/fas-ui/)
 
-# FAS-UI 
+# PAY-UI 
 ## About
 
 TBD.

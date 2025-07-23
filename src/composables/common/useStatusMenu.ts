@@ -18,7 +18,6 @@ export function useStatusMenu (props, context) {
     }
   })
 
-  // state , action , mutation from vuex store
   const routingAllowedSlipStatus = computed(() => {
     return getFormattedStatusList()
   })

@@ -7,7 +7,6 @@ export function useCreateRoutingSlipPayment () {
   const createRoutingSlipChequePaymentRef = ref<HTMLFormElement>(null)
   const createRoutingSlipCashPaymentRef = ref<HTMLFormElement>(null)
 
-  // vuex state and mutations
   // using same v-model value for getting value and update parent on change
   const isPaymentCheque:any = computed({
     get: () => {

@@ -24,8 +24,6 @@ export default function usePaymentInformation (_, context) {
   const isExpanded = ref<boolean>(false)
   const isEditable = ref<boolean>(false)
 
-  // vuex getter and state
-
   // As per current business rule, a routingslip has one-to-one relation with payment method (Cash/Cheque)
   // Therefore, we can determine the payment method of the current routingslip from the first payment record
   const isPaymentCheque = computed(() => {

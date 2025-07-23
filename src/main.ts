@@ -75,8 +75,7 @@ function removeServiceWorkers() {
   }
 }
 // setting to window to avoid library build undefined issue for global loader
-const piniaStore = getPiniaStore();
-(window as any).fasStore = piniaStore
+const piniaStore = getPiniaStore()
 
 function renderVue () {
   new Vue({
