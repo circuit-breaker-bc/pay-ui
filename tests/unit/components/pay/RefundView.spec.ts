@@ -45,29 +45,29 @@ describe('RefundView.vue', () => {
   beforeEach(async () => {
     localVue = createLocalVue()
     invoiceResponse = {
-      'id': 3828,
-      'lineItems': [
+      id: 3828,
+      lineItems: [
         {
-          'id': 5335,
-          'description': 'Item 1',
-          'filingFees': 20.0,
-          'futureEffectiveFees': 0.0,
-          'priorityFees': 33.0,
-          'serviceFees': 1.5,
-          'total': 53.0
+          id: 5335,
+          description: 'Item 1',
+          filingFees: 20.0,
+          futureEffectiveFees: 0.0,
+          priorityFees: 33.0,
+          serviceFees: 1.5,
+          total: 53.0
         },
         {
-          'id': 5336,
-          'description': 'Item 2',
-          'filingFees': 10.0,
-          'futureEffectiveFees': 5.0,
-          'priorityFees': 0.0,
-          'serviceFees': 1.5,
-          'total': 10.0
+          id: 5336,
+          description: 'Item 2',
+          filingFees: 10.0,
+          futureEffectiveFees: 5.0,
+          priorityFees: 0.0,
+          serviceFees: 1.5,
+          total: 10.0
         }
       ],
-      'paid': 66.0,
-      'paymentMethod': 'DIRECT_PAY'
+      paid: 66.0,
+      paymentMethod: 'DIRECT_PAY'
     }
 
     sandbox = sinon.createSandbox()

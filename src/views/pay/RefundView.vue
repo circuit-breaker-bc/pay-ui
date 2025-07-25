@@ -353,7 +353,7 @@ export default defineComponent({
     }
 
     function getRefundPayload () {
-      let refundPayload = {
+      const refundPayload = {
         reason: state.refundComment,
         refundRevenue: []
       }
