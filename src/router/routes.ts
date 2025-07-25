@@ -11,6 +11,7 @@ import ViewRoutingSlip from '../views/ViewRoutingSlip.vue'
 import ShortNameRefundSelection from '@/components/eft/ShortNameRefundSelection.vue'
 import ShortNameDetailsView from '@/components/eft/ShortNameDetailsView.vue'
 import ShortNameRefundView from '@/components/eft/ShortNameRefundView.vue'
+import RefundView from '@/views/pay/RefundView.vue'
 
 const routes: Array<RouteConfig> = [
   { path: '/', name: 'root', redirect: 'home' },
@@ -126,6 +127,16 @@ const routes: Array<RouteConfig> = [
     props: route => ({
       shortNameId: Number(route.params.shortNameId)
     })
+  },
+  {
+    path: '/pay/refund',
+    name: 'refund',
+    component: RefundView,
+    props: true,
+    meta: {
+      requiresAuth: true,
+      allowedRoles: [Role.CreateCredits, Role.FasRefund]
+    }
   }
 ]
 

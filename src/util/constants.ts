@@ -100,7 +100,9 @@ export enum Role {
   FAS_CORRECTION = 'fas_correction',
   ManageEft = 'manage_eft',
   EftRefund = 'eft_refund',
-  EftRefundApprover = 'eft_refund_approver'
+  EftRefundApprover = 'eft_refund_approver',
+  CreateCredits = 'create_credits',
+  FasRefund = 'fas_refund'
 }
 
 export enum InvoiceStatus {
@@ -261,6 +263,22 @@ export enum LookupStates {
   SHOW_RESULTS = 'show results',
   NO_RESULTS = 'no results',
   SUMMARY = 'summary'
+}
+
+export enum PaymentTypes {
+    CASH = 'CASH',
+    CHEQUE = 'CHEQUE',
+    CREDIT_CARD = 'CC',
+    BCOL = 'DRAWDOWN',
+    DIRECT_PAY = 'DIRECT_PAY',
+    EFT = 'EFT',
+    INTERNAL = 'INTERNAL',
+    NO_FEE = 'NO_FEE',
+    ONLINE_BANKING = 'ONLINE_BANKING',
+    PAD = 'PAD',
+    EJV = 'EJV',
+    WIRE = 'WIRE',
+    CREDIT = 'CREDIT'
 }
 
 export const AXIOS_ERROR_ALERT_TIME_OUT = 5000
