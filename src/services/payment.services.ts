@@ -1,5 +1,5 @@
 import { EFTShortnameResponse, EFTTransactionFilterParams, EFTTransactionListResponse } from '@/models/eft-transaction'
-import { EftRefundRequest } from '@/models/refund'
+import { EftRefundRequest, RefundRequest } from '@/models/refund'
 import { LinkedShortNameFilterParams, ShortNameSummaryFilterParams } from '@/models/short-name'
 import { ShortNameLinkStatus } from '@/util/constants'
 import {
@@ -10,9 +10,10 @@ import {
 import { AxiosPromise } from 'axios'
 import ConfigHelper from '@/util/config-helper'
 import { axios } from '@/util/http-util'
+import { Invoice } from '@/models/Invoice'
 
 export default class PaymentService {
-  static async postShortnamePaymentAction (shortNameId: string, bodyParams: any): AxiosPromise<void> {
+  static postShortnamePaymentAction (shortNameId: string, bodyParams: any): AxiosPromise<void> {
     const url = `${ConfigHelper.getPayAPIURL()}/eft-shortnames/${shortNameId}/payment`
     return axios.post(url, bodyParams)
   }
@@ -129,6 +130,16 @@ export default class PaymentService {
     }
     const url = `${ConfigHelper.getPayAPIURL()}/eft-shortnames/shortname-refund`
     return axios.get(url, { params })
+  }
+
+  static getInvoice (invoiceId: string, accountId: number): AxiosPromise<Invoice> {
+    const headers = accountId ? { 'Account-Id': accountId } : {}
+    return axios.get(`${ConfigHelper.getPayAPIURL()}/payment-requests/${invoiceId}`, { headers: headers })
+  }
+
+  static refundInvoice (invoiceId: string, refundPayload: RefundRequest): AxiosPromise<any> {
+    const url = `${ConfigHelper.getPayAPIURL()}/payment-requests/${invoiceId}/refunds`
+    return axios.post(url, refundPayload)
   }
 
   static getStatementsList (accountId: string | number, filterParams: StatementFilterParams): AxiosPromise<StatementListResponse> {
