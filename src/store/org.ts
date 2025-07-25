@@ -10,7 +10,7 @@ export const useOrgStore = defineStore('org', () => {
     currentOrganization: undefined as Organization,
     statementsSummary: {} as StatementsSummary
   })
-  
+
   async function getInvoice (invoicePayload) {
     const response = await PaymentService.getInvoice(invoicePayload.invoiceId, invoicePayload.accountId)
     return response?.data || {}

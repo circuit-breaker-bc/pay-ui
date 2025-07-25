@@ -240,6 +240,7 @@ import { Invoice } from '@/models/Invoice'
 import { PaymentTypes } from '@/util/constants'
 import { useOrgStore } from '@/store/org'
 
+/* eslint-disable no-unused-vars */
 enum RefundType {
   FULL = 'full',
   PARTIAL = 'partial'
@@ -251,6 +252,7 @@ enum RefundLineTypes {
   PRIORITY_FEES = 'PRIORITY_FEES',
   SERVICE_FEES = 'SERVICE_FEES'
 }
+/* eslint-enable no-unused-vars */
 
 export default defineComponent({
   name: 'PaymentRefund',
