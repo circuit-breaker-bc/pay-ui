@@ -35,14 +35,21 @@ export interface Invoice {
   id?: number
   lineItems?: LineItem[]
   detail?: Detail[]
-  paid?: number
+  paid?: number,
+  paymentAccount?: {
+    accountId?: string
+    accountName?: string
+    billable?: boolean
+  }
+  folioNumber?: string
   paymentMethod?: string
   references?: Reference[]
   refund?: number
   routingSlip?: string
   serviceFees?: string
   statusCode?: string
-  total?: number
+  total?: number,
+  details?: Detail[]
 }
 
 export interface InvoiceList {

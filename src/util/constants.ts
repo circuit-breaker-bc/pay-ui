@@ -12,7 +12,8 @@ export enum SessionStorageKeys {
   SiteminderLogoutUrl = 'SITEMINDER_LOGOUT_URL',
   ShortNamesTabIndex = 'Short_Names_Tab_Index',
   LinkedAccount = 'Linked_Account',
-  LinkedShortNamesFilter = 'Linked_Short_Names_Filter'
+  LinkedShortNamesFilter = 'Linked_Short_Names_Filter',
+  CurrentAccount = 'CURRENT_ACCOUNT'
 }
 
 export enum LDFlags {
@@ -106,10 +107,25 @@ export enum Role {
 }
 
 export enum InvoiceStatus {
-  COMPLETED = 'COMPLETED',
-  REFUNDED = 'REFUNDED',
+  APPROVED = 'APPROVED',
+  CANCELLED = 'CANCELLED',
+  CREATED = 'CREATED',
+  CREDITED = 'CREDITED',
+  COMPLETED = 'COMPLETED', // NOTE: this === PAID value (api alters it from PAID to COMPLETED in postdump)
   DELETE_ACCEPTED = 'DELETE_ACCEPTED',
-  REFUNDREQUEST = 'REFUND_REQUESTED',
+  DELETED = 'DELETED',
+  OVERDUE = 'OVERDUE',
+  PAID = 'PAID',
+  PARTIAL = 'PARTIAL_PAID',
+  PENDING = 'PENDING',
+  REFUND_REQUESTED = 'REFUND_REQUESTED',
+  REFUNDED = 'REFUNDED',
+  SETTLEMENT_SCHEDULED = 'SETTLEMENT_SCHED',
+  UPDATE_REVENUE_ACCOUNT = 'GL_UPDATED',
+  UPDATE_REVENUE_ACCOUNT_REFUND = 'GL_UPDATED_REFUND',
+  // Not in pay-api, but shown in transaction table
+  PARTIALLY_REFUNDED = 'PARTIALLY_REFUNDED',
+  PARTIALLY_CREDITED = 'PARTIALLY_CREDITED'
 }
 
 export enum ApiErrors {
@@ -392,6 +408,20 @@ export const ChequeRefundStatus = [
     display: true
   }
 ]
+
+export enum Product {
+    BCA = 'BCA',
+    BUSINESS = 'BUSINESS',
+    BUSINESS_SEARCH = 'BUSINESS_SEARCH',
+    CSO = 'CSO',
+    ESRA = 'ESRA',
+    MHR = 'MHR',
+    PPR = 'PPR',
+    RPPR = 'RPPR',
+    RPT = 'RPT',
+    STRR = 'STRR',
+    VS = 'VS'
+}
 
 export const chequeRefundCodes = ChequeRefundStatus.reduce((acc, status) => {
   acc[status.code] = status.code

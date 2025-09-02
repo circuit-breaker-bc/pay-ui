@@ -170,4 +170,16 @@ export default class PaymentService {
     const url = `${ConfigHelper.getPayAPIURL()}/accounts/${accountId}/statements/summary`
     return axios.get(url)
   }
+
+  static postReceipt (invoiceId: number, accountId: string, invoiceCreatedOn: string): AxiosPromise<any> {
+    const url = `${ConfigHelper.getPayAPIURL()}/payment-requests/${invoiceId}/receipts`
+    const headers = {
+      Accept: 'application/pdf',
+      'Account-Id': accountId
+    }
+    const body = {
+      filingDateTime: invoiceCreatedOn
+    }
+    return axios.post(url, body, { headers, responseType: 'blob' as 'json' })
+  }
 }

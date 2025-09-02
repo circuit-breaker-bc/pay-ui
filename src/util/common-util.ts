@@ -11,7 +11,7 @@ import 'moment-timezone'
 
 export default class CommonUtils {
   // Formatting date in the desired format for displaying in the template
-  static formatDisplayDate (date: Date, format?: string) {
+  static formatDisplayDate (date: Date | string, format?: string) {
     return date ? moment(date).format(format || 'MMM DD, YYYY') : ''
   }
 
@@ -40,41 +40,34 @@ export default class CommonUtils {
   // blob convert to downloadable file
   static fileDownload (data: any, fileName: string, fileType: string = 'text/plain', action:string = 'download') {
     const blob = new Blob([data], { type: fileType })
-    if (typeof window.navigator.msSaveBlob !== 'undefined') {
-      // IE workaround for "HTML7007: One or more blob URLs were
-      // revoked by closing the blob for which they were created.
-      // These URLs will no longer resolve as the data backing
-      // the URL has been freed."
-      window.navigator.msSaveBlob(blob, fileName)
-    } else {
-      const blobURL = (window.URL && window.URL.createObjectURL) ? window.URL.createObjectURL(blob) : window.webkitURL.createObjectURL(blob)
-      const tempLink = document.createElement('a')
-      tempLink.style.display = 'none'
-      tempLink.href = blobURL
-      if (action === 'open') {
-        tempLink.setAttribute('target', '_blank')
-      } else {
-        tempLink.setAttribute('download', fileName)
-      }
 
-      // Safari thinks _blank anchor are pop ups. We only want to set _blank
-      // target if the browser does not support the HTML5 download attribute.
-      // This allows you to download files in desktop safari if pop up blocking
-      // is enabled.
-      if (typeof tempLink.download === 'undefined') {
-        tempLink.setAttribute('target', '_blank')
-      }
-      document.body.appendChild(tempLink)
-      tempLink.click()
-      setTimeout(() => {
-        document.body.removeChild(tempLink)
-        // TO CHECK: not revoking may increase more temp memory usage
-        // once download, we will revokeObjectURL
-        if (action !== 'open') {
-          window.URL.revokeObjectURL(blobURL)
-        }
-      }, 200)
+    const blobURL = (window.URL && window.URL.createObjectURL) ? window.URL.createObjectURL(blob) : window.webkitURL.createObjectURL(blob)
+    const tempLink = document.createElement('a')
+    tempLink.style.display = 'none'
+    tempLink.href = blobURL
+    if (action === 'open') {
+      tempLink.setAttribute('target', '_blank')
+    } else {
+      tempLink.setAttribute('download', fileName)
     }
+
+    // Safari thinks _blank anchor are pop ups. We only want to set _blank
+    // target if the browser does not support the HTML5 download attribute.
+    // This allows you to download files in desktop safari if pop up blocking
+    // is enabled.
+    if (typeof tempLink.download === 'undefined') {
+      tempLink.setAttribute('target', '_blank')
+    }
+    document.body.appendChild(tempLink)
+    tempLink.click()
+    setTimeout(() => {
+      document.body.removeChild(tempLink)
+      // TO CHECK: not revoking may increase more temp memory usage
+      // once download, we will revokeObjectURL
+      if (action !== 'open') {
+        window.URL.revokeObjectURL(blobURL)
+      }
+    }, 200)
   }
 
   static statusListColor (status: string, textColor: boolean = true) {
@@ -246,6 +239,15 @@ export default class CommonUtils {
     })
   }
 
+  static formatToTwoDecimals (amount: number | string): string {
+    const number = Number(amount)
+    const formatter = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
+    return formatter.format(number)
+  }
+
   static formatUtcToPacificDate (dateStr: string, format: string): string {
     if (!dateStr) return ''
     const date = moment.utc(dateStr).toDate()
@@ -269,5 +271,9 @@ export default class CommonUtils {
 
   static formatAccountDisplayName (item: any) {
     return `${item?.accountId} ${item?.accountName}`
+  }
+
+  static getRefundMethodText (refundMethods, refundMethodvalue: string) {
+    return refundMethods.find(m => m.value === refundMethodvalue)?.text
   }
 }
