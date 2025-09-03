@@ -235,7 +235,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, PropType, nextTick, computed } from '@vue/composition-api'
+import { defineComponent, reactive, toRefs, watch, PropType, nextTick, computed } from '@vue/composition-api'
 import CommonUtils from '@/util/common-util'
 import { RefundFormData, RefundType, RefundLineItem } from '@/models/transaction-refund'
 import moment from 'moment'
@@ -271,34 +271,32 @@ export default defineComponent({
     }
   },
   setup (props, { emit }) {
-    const refundRequestForm = ref<any>(null)
-    const refundFormData = ref<RefundFormData>({
-      refundType: null,
-      refundLineItems: [],
-      totalRefundAmount: 0,
-      refundMethod: null,
-      notificationEmail: null,
-      reasonsForRefund: null,
-      staffComment: null,
-      requestedBy: null,
-      requestedTime: null
-    })
-
-    const currentUser = CommonUtils.getUserInfo()
-    const isFormValid = ref<boolean>(false)
-    const emailRules = CommonUtils.emailRules(true)
-
-    const formRules = ref({
-      refundType: [
-        (v: any) => !!v || 'Refund Type is required'
-      ],
-      refundMethod: [
-        (v: any) => !!v || 'Refund Method is required'
-      ],
-      notificationEmail: emailRules,
-      reasonsForRefund: [
-        (v: any) => !!v || 'Reasons for Refund is required'
-      ]
+    const state = reactive({
+      refundRequestForm: null,
+      refundFormData: {
+        refundType: null,
+        refundLineItems: [],
+        totalRefundAmount: 0,
+        refundMethod: null,
+        notificationEmail: null,
+        reasonsForRefund: null,
+        staffComment: null,
+        requestedBy: null,
+        requestedTime: null
+      } as RefundFormData,
+      isFormValid: false,
+      formRules: {
+        refundType: [
+          (v: any) => !!v || 'Refund Type is required'
+        ],
+        refundMethod: [
+          (v: any) => !!v || 'Refund Method is required'
+        ],
+        notificationEmail: CommonUtils.emailRules(true),
+        reasonsForRefund: [
+          (v: any) => !!v || 'Reasons for Refund is required'
+        ]
+      }
     })
 
     const getRequestedAmountRules = (max?: number) => [
@@ -308,6 +306,8 @@ export default defineComponent({
         ? true
         : `Refund amount exceeds ${CommonUtils.formatAmount(Number(max))}`
     ]
+
+    const currentUser = CommonUtils.getUserInfo()
 
     const formDisabled = computed(() => {
       return props.previousRefundedAmount > 0
@@ -320,32 +320,29 @@ export default defineComponent({
     })
 
     watch(() => props.refundLineItems, (newData) => {
-      refundFormData.value.refundLineItems = JSON.parse(JSON.stringify(newData))
+      state.refundFormData.refundLineItems = JSON.parse(JSON.stringify(newData))
     }, { immediate: true, deep: true })
 
     watch(() => props.refundMethods, (newData) => {
       if (newData?.length === 1) {
-        refundFormData.value.refundMethod = newData[0].value
+        state.refundFormData.refundMethod = newData[0].value
       }
     }, { immediate: true })
 
     function onReviewBtnClick () {
-      console.log('Refund Form Data:', refundFormData.value)
-      console.log('props line items:', props.refundLineItems)
-      if (!refundRequestForm.value.validate()) {
-        console.log('Form validation failed')
+      if (!state.refundRequestForm.validate()) {
         return
       }
       calculateTotalRequestedAmount()
 
-      refundFormData.value.requestedBy = currentUser?.fullName
-      refundFormData.value.requestedTime = moment().format()
-      emit('onProceedToReview', refundFormData.value)
+      state.refundFormData.requestedBy = currentUser?.fullName
+      state.refundFormData.requestedTime = moment().format()
+      emit('onProceedToReview', state.refundFormData)
     }
 
     function onRefundEntireItemRequestedChange (value: boolean, index: number) {
       if (value) {
-        const lineItem = refundFormData.value.refundLineItems[index]
+        const lineItem = state.refundFormData.refundLineItems[index]
         lineItem.filingFeesRequested = CommonUtils.formatToTwoDecimals(Number(lineItem.filingFees))
         lineItem.serviceFeesRequested = null
         lineItem.priorityFeesRequested = CommonUtils.formatToTwoDecimals(Number(lineItem.priorityFees))
@@ -360,17 +357,17 @@ export default defineComponent({
 
     function calculateTotalRequestedAmount () {
       let total = 0
-      if (refundFormData.value.refundType === RefundType.FULL_REFUND) {
+      if (state.refundFormData.refundType === RefundType.FULL_REFUND) {
         total = props.totalTransactionAmount
       } else {
-        refundFormData.value.refundLineItems.forEach(item => {
+        state.refundFormData.refundLineItems.forEach(item => {
           total += getValidNumber(Number(item.filingFeesRequested) || 0, item.filingFees)
           total += getValidNumber(Number(item.serviceFeesRequested) || 0, item.serviceFees)
           total += getValidNumber(Number(item.priorityFeesRequested) || 0, item.priorityFees)
           total += getValidNumber(Number(item.futureEffectiveFeesRequested) || 0, item.futureEffectiveFees)
         })
       }
-      refundFormData.value.totalRefundAmount = total
+      state.refundFormData.totalRefundAmount = total
     }
 
     async function onRefundTypeChange () {
@@ -379,20 +376,17 @@ export default defineComponent({
     }
 
     return {
-      refundFormData,
-      formatAmount: CommonUtils.formatAmount,
-      isFormValid,
-      formRules,
+      ...toRefs(state),
+      RefundType,
       getRequestedAmountRules,
       onReviewBtnClick,
-      refundRequestForm,
       onRefundEntireItemRequestedChange,
       calculateTotalRequestedAmount,
       onRefundTypeChange,
+      formatAmount: CommonUtils.formatAmount,
       getRefundMethodText: CommonUtils.getRefundMethodText,
       formDisabled,
-      refundTypeHint,
-      RefundType
+      refundTypeHint
     }
   }
 })

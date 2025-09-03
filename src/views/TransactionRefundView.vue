@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, computed } from '@vue/composition-api'
+import { defineComponent, onMounted, reactive, toRefs, computed } from '@vue/composition-api'
 import PaymentDetails from '@/components/TransactionRefund/PaymentDetails.vue'
 import TransactionDetails from '@/components/TransactionRefund/TransactionDetails.vue'
 import RefundRequestForm from '@/components/TransactionRefund/RefundRequestForm.vue'
@@ -72,53 +72,55 @@ export default defineComponent({
     }
   },
   setup (props) {
-    const dataLoading = ref<number>(0)
-    const paymentData = ref<PaymentData>({
-      accountName: null,
-      folioNumber: null,
-      initiatedBy: null,
-      paymentMethod: null,
-      paymentStatus: null,
-      totalTransactionAmount: 0
+    const state = reactive({
+      dataLoading: 0,
+      paymentData: {
+        accountName: null,
+        folioNumber: null,
+        initiatedBy: null,
+        paymentMethod: null,
+        paymentStatus: null,
+        totalTransactionAmount: 0
+      } as PaymentData,
+      transactionData: {
+        invoiceId: null,
+        transactionDate: null,
+        invoiceReferenceId: null,
+        invoiceStatusCode: null,
+        invoiceCreatedOn: null,
+        transactionAmount: 0,
+        applicationName: null,
+        applicationType: null,
+        businessIdentifier: null,
+        applicationDetails: null
+      } as TransactionData,
+      refundFormData: {
+        refundType: null,
+        refundLineItems: [],
+        totalRefundAmount: 0,
+        refundMethod: null,
+        notificationEmail: null,
+        reasonsForRefund: null,
+        staffComment: null,
+        requestedBy: null,
+        requestedTime: null
+      } as RefundFormData,
+      refundLineItems: [] as RefundLineItem[],
+      refundFormStage: RefundRequestStage.REQUEST_FORM as RefundRequestStage,
+      refundMethods: [
+        { value: 'refund-as-account-credits', text: 'Refund as Account Credits' }
+      ],
+      previousRefundedAmount: 0,
+      isProcessing: false,
+      message: null as Message | null,
+      orgStore: useOrgStore(),
+      invoicePaymentMethod: null as string | null
     })
-    const transactionData = ref<TransactionData>({
-      invoiceId: null,
-      transactionDate: null,
-      invoiceReferenceId: null,
-      invoiceStatusCode: null,
-      invoiceCreatedOn: null,
-      transactionAmount: 0,
-      applicationName: null,
-      applicationType: null,
-      businessIdentifier: null,
-      applicationDetails: null
-    })
-    const refundFormData = ref<RefundFormData>({
-      refundType: null,
-      refundLineItems: [],
-      totalRefundAmount: 0,
-      refundMethod: null,
-      notificationEmail: null,
-      reasonsForRefund: null,
-      staffComment: null,
-      requestedBy: null,
-      requestedTime: null
-    })
-    const refundLineItems = ref<RefundLineItem[]>([])
-    const refundFormStage = ref<RefundRequestStage>(RefundRequestStage.REQUEST_FORM)
-    const refundMethods = ref([
-      { value: 'refund-as-account-redits', text: 'Refund as Account Credits' }
-    ])
-    const previousRefundedAmount = ref<number>(0)
-    const isProcessing = ref<boolean>(false)
-    const message = ref<Message | null>(null)
-    const orgStore = useOrgStore()
 
-    const invoicePaymentMethod = ref<string | null>(null)
     const paymentMethodCodesAllowedPartialRefunds = ['DIRECT_PAY', 'EFT', 'EJV', 'ONLINE_BANKING', 'PAD']
     const isPartialRefundAllowed = computed(() =>
-      paymentData.value.paymentMethod &&
-      paymentMethodCodesAllowedPartialRefunds.includes(paymentData.value.paymentMethod)
+      state.paymentData.paymentMethod &&
+      paymentMethodCodesAllowedPartialRefunds.includes(state.paymentData.paymentMethod)
     )
 
     onMounted(async () => {
@@ -126,7 +128,7 @@ export default defineComponent({
     })
 
     function setPaymentData (invoice: Invoice) {
-      paymentData.value = {
+      state.paymentData = {
         accountName: invoice.paymentAccount?.accountName,
         folioNumber: invoice.folioNumber,
         initiatedBy: invoice.createdBy,
@@ -137,7 +139,7 @@ export default defineComponent({
     }
 
     function setTransactionData (invoice: Invoice) {
-      transactionData.value = {
+      state.transactionData = {
         invoiceId: invoice.id,
         transactionDate: invoice.createdOn, // ??is it utc, convert it to pacific, talk to ethan
         invoiceReferenceId: invoice.references?.find(f => f.statusCode === 'COMPLETED')?.invoiceNumber,
@@ -154,8 +156,8 @@ export default defineComponent({
     function getRefundPayload () {
       const refundRevenues: RefundRevenueType[] = []
 
-      if (refundFormData.value.refundType === RefundType.PARTIAL_REFUND) {
-        const refundLineItems = refundFormData.value.refundLineItems
+      if (state.refundFormData.refundType === RefundType.PARTIAL_REFUND) {
+        const refundLineItems = state.refundFormData.refundLineItems
         refundLineItems?.forEach(refundLineItem => {
           const feeTypes = [
             { key: 'filingFeesRequested', type: RefundLineTypes.BASE_FEES },
@@ -177,7 +179,7 @@ export default defineComponent({
       }
 
       const refundPayload: RefundRequest = {
-        reason: refundFormData.value.reasonsForRefund,
+        reason: state.refundFormData.reasonsForRefund,
         // staffComment: refundFormData.value.staffComment,
         refundRevenue: refundRevenues
       }
@@ -185,7 +187,7 @@ export default defineComponent({
     }
 
     function setRefundLineItems (lineItems: LineItem[]) {
-      refundLineItems.value = lineItems.map(lineItem => ({
+      state.refundLineItems = lineItems.map(lineItem => ({
         id: lineItem.id,
         description: lineItem.description,
         filingFees: lineItem.filingFees,
@@ -198,66 +200,55 @@ export default defineComponent({
 
     async function fetchInvoice (invoiceId) {
       try {
-        dataLoading.value += 1
-        const invoice: Invoice = await orgStore.getInvoice({ invoiceId: invoiceId })
+        state.dataLoading += 1
+        const invoice: Invoice = await state.orgStore.getInvoice({ invoiceId: invoiceId })
         setPaymentData(invoice)
         setTransactionData(invoice)
         setRefundLineItems(invoice.lineItems)
-        previousRefundedAmount.value = invoice.refund || 0
-        invoicePaymentMethod.value = invoice.paymentMethod
+        state.previousRefundedAmount = invoice.refund || 0
+        state.invoicePaymentMethod = invoice.paymentMethod
       } catch (error: any) {
         console.error('Failed to fetch invoice:', error)
       } finally {
-        dataLoading.value -= 1
+        state.dataLoading -= 1
       }
     }
 
     function onProceedToReview (formData: RefundFormData) {
-      refundFormData.value = formData
-      refundFormStage.value = RefundRequestStage.DATA_VALIDATED
+      state.refundFormData = formData
+      state.refundFormStage = RefundRequestStage.DATA_VALIDATED
     }
 
     async function onProceedToConfirm () {
       try {
-        isProcessing.value = true
-        message.value = null
-        console.log('Final submitted data: ', refundFormData.value)
-        const response = await orgStore.refundInvoice(props.invoiceId, getRefundPayload())
+        state.isProcessing = true
+        state.message = null
+        const response = await state.orgStore.refundInvoice(props.invoiceId, getRefundPayload())
         const formatAmount = CommonUtils.formatAmount(response.refundAmount)
-        message.value = {
+        state.message = {
           text: `Refund successful for the amount of ${formatAmount}.`,
           type: 'success',
           show: true
         }
       } catch (error) {
-        message.value = {
+        state.message = {
           text: 'Refund failed',
           type: 'error',
           show: true
         }
         console.log(`Refund process failed: ${error}`)
       } finally {
-        isProcessing.value = false
+        state.isProcessing = false
       }
     }
 
     return {
-      paymentData,
-      transactionData,
-      refundFormData,
-      dataLoading,
-      refundFormStage,
+      ...toRefs(state),
+      RefundRequestStage,
       onProceedToReview,
       onProceedToConfirm,
-      RefundRequestStage,
-      refundLineItems,
-      refundMethods,
       getProductDisplayName,
-      previousRefundedAmount,
-      isPartialRefundAllowed,
-      isProcessing,
-      message,
-      invoicePaymentMethod
+      isPartialRefundAllowed
     }
   }
 })

@@ -1,7 +1,7 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils'
 import Vuetify from 'vuetify'
 import VueCompositionAPI from '@vue/composition-api'
-import TransactionRefundView from '@/views/transactionRefund/TransactionRefundView.vue'
+import TransactionRefundView from '@/views/TransactionRefundView.vue'
 import { RefundRequestStage, RefundType } from '@/models/transaction-refund'
 import type { Invoice } from '@/models/Invoice'
 import CommonUtils from '@/util/common-util'

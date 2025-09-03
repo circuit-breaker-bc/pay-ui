@@ -167,7 +167,6 @@ export default defineComponent({
   },
   setup (props, { emit }) {
     function onConfirmBtnClick () {
-      console.log('Submitted data: ', props.refundFormData)
       emit('onProceedToConfirm')
     }
 

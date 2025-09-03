@@ -140,8 +140,8 @@ const routes: Array<RouteConfig> = [
     }
   },
   {
-    path: '/transactionrefund/:invoiceId?',
-    name: 'transactionrefund',
+    path: '/transaction-refund/:invoiceId?',
+    name: 'transaction-refund',
     component: TransactionRefundView,
     props: (route) => ({
       invoiceId: route.params.invoiceId
