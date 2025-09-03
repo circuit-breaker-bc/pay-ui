@@ -296,7 +296,15 @@ export default defineComponent({
         reasonsForRefund: [
           (v: any) => !!v || 'Reasons for Refund is required'
         ]
-      }
+      },
+      formDisabled: computed(() => {
+        return props.previousRefundedAmount > 0
+      }),
+      refundTypeHint: computed(() => {
+        return props.isPartialRefundAllowed
+          ? ''
+          : `Partial Refunds not supported for payment method ${props.invoicePaymentMethod} invoices`
+      })
     })
 
     const getRequestedAmountRules = (max?: number) => [
@@ -308,16 +316,6 @@ export default defineComponent({
     ]
 
     const currentUser = CommonUtils.getUserInfo()
-
-    const formDisabled = computed(() => {
-      return props.previousRefundedAmount > 0
-    })
-
-    const refundTypeHint = computed(() => {
-      return props.isPartialRefundAllowed
-        ? ''
-        : `Partial Refunds not supported for payment method ${props.invoicePaymentMethod} invoices`
-    })
 
     watch(() => props.refundLineItems, (newData) => {
       state.refundFormData.refundLineItems = JSON.parse(JSON.stringify(newData))
@@ -384,9 +382,7 @@ export default defineComponent({
       calculateTotalRequestedAmount,
       onRefundTypeChange,
       formatAmount: CommonUtils.formatAmount,
-      getRefundMethodText: CommonUtils.getRefundMethodText,
-      formDisabled,
-      refundTypeHint
+      getRefundMethodText: CommonUtils.getRefundMethodText
     }
   }
 })
