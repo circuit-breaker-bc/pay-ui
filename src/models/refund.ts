@@ -1,5 +1,5 @@
 export interface RefundRevenueType {
-  paymentLineItemId: string
+  paymentLineItemId: number
   refundAmount: number
   refundType: string
 }
