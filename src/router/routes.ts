@@ -13,6 +13,7 @@ import ShortNameDetailsView from '@/components/eft/ShortNameDetailsView.vue'
 import ShortNameRefundView from '@/components/eft/ShortNameRefundView.vue'
 import RefundView from '@/views/pay/RefundView.vue'
 import TransactionRefundView from '@/views/TransactionRefundView.vue'
+import TransactionView from '@/views/TransactionView.vue'
 
 const routes: Array<RouteConfig> = [
   { path: '/', name: 'root', redirect: 'home' },
@@ -149,6 +150,15 @@ const routes: Array<RouteConfig> = [
     meta: {
       requiresAuth: true,
       allowedRoles: [Role.CreateCredits, Role.FasRefund]
+    }
+  },
+  {
+    path: '/transactions',
+    name: 'transactions',
+    component: TransactionView,
+    meta: {
+      requiresAuth: true,
+      allowedRoles: [Role.ViewAllTransactions]
     }
   }
 ]

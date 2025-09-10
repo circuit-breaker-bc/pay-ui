@@ -17,6 +17,7 @@ export enum SessionStorageKeys {
 }
 
 export enum LDFlags {
+  EnableDetailsFilter = 'enable-transactions-detail-filter',
   EnableEFTRefundByCheque = 'enable-eft-refund-by-cheque'
 }
 
@@ -103,7 +104,8 @@ export enum Role {
   EftRefund = 'eft_refund',
   EftRefundApprover = 'eft_refund_approver',
   CreateCredits = 'create_credits',
-  FasRefund = 'fas_refund'
+  FasRefund = 'fas_refund',
+  ViewAllTransactions = 'view_all_transactions'
 }
 
 export enum InvoiceStatus {
@@ -140,6 +142,15 @@ export enum CreateRoutingSlipStatus {
 
 export enum PatchActions {
   UPDATE_STATUS = 'updateStatus'
+}
+
+export enum Account {
+    PREMIUM = 'PREMIUM',
+    BASIC = 'BASIC',
+    STAFF = 'STAFF',
+    SBC_STAFF = 'SBC_STAFF',
+    MAXIMUS_STAFF = 'MAXIMUS_STAFF',
+    CONTACT_CENTRE_STAFF = 'CC_STAFF'
 }
 
 export enum AccountStatus {
