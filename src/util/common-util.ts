@@ -15,6 +15,10 @@ export default class CommonUtils {
     return date ? moment(date).format(format || 'MMM DD, YYYY') : ''
   }
 
+  static formatDisplayDateInPacific (date: Date | string, format?: string) {
+    return date ? moment(date).tz('America/Vancouver').format(format || 'MMM DD, YYYY') : ''
+  }
+
   static requiredFieldRule (errorMessage: string = 'This field is required') {
     return [v => !!v || errorMessage]
   }
@@ -275,5 +279,9 @@ export default class CommonUtils {
 
   static getRefundMethodText (refundMethods, refundMethodvalue: string) {
     return refundMethods.find(m => m.value === refundMethodvalue)?.text
+  }
+
+  static extractAndConvertStringToNumber (str: string) {
+    return Number(str.replace(/\D/g, ''))
   }
 }

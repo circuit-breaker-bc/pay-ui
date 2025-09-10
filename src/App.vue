@@ -15,6 +15,7 @@
         :redirectUrlLoginFail="logoutUrl"
         :redirect-on-logout="logoutUrl"
         :showActions="true"
+        @account-data-loaded="appLoaded"
       >
       </SbcHeader>
       <BreadCrumb />
@@ -64,6 +65,9 @@ export default defineComponent({
     const showLoading = ref(true)
     const logoutUrl = ref('')
 
+    const appLoaded = () => {
+      appStore.loadComplete()
+    }
     onMounted(() => {
       showLoading.value = false
     })
@@ -74,7 +78,8 @@ export default defineComponent({
       isThereActiveCalls,
       aboutText,
       showLoading,
-      logoutUrl
+      logoutUrl,
+      appLoaded
     }
   }
 })

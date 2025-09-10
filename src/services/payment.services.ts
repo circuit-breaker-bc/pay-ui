@@ -2,6 +2,7 @@ import { EFTShortnameResponse, EFTTransactionFilterParams, EFTTransactionListRes
 import { EftRefundRequest, RefundRequest } from '@/models/refund'
 import { LinkedShortNameFilterParams, ShortNameSummaryFilterParams } from '@/models/short-name'
 import { ShortNameLinkStatus } from '@/util/constants'
+import { TransactionFilter, TransactionFilterParams, TransactionListResponse } from '@/models/transaction'
 import {
   StatementFilterParams,
   StatementListResponse
@@ -13,6 +14,28 @@ import { axios } from '@/util/http-util'
 import { Invoice } from '@/models/Invoice'
 
 export default class PaymentService {
+  static getTransactions (accountId: number, filterParams: TransactionFilterParams, viewAll = false): AxiosPromise<TransactionListResponse> {
+    const params = new URLSearchParams()
+    if (filterParams.pageNumber) {
+      params.append('page', filterParams.pageNumber.toString())
+    }
+    if (filterParams.pageLimit) {
+      params.append('limit', filterParams.pageLimit.toString())
+    }
+    if (viewAll) params.append('viewAll', `${viewAll}`)
+
+    const url = `${ConfigHelper.getPayAPIURL()}/accounts/${accountId}/payments/queries`
+    return axios.post(url, { ...filterParams.filterPayload, excludeCounts: true }, { params })
+  }
+
+  static getTransactionReports (accountId: number, filterParams: TransactionFilter): AxiosPromise<any> {
+    const headers = {
+      Accept: 'text/csv'
+    }
+    const url = `${ConfigHelper.getPayAPIURL()}/accounts/${accountId}/payments/reports`
+    return axios.post(url, filterParams, { headers, responseType: 'blob' as 'json' })
+  }
+
   static postShortnamePaymentAction (shortNameId: string, bodyParams: any): AxiosPromise<void> {
     const url = `${ConfigHelper.getPayAPIURL()}/eft-shortnames/${shortNameId}/payment`
     return axios.post(url, bodyParams)
