@@ -43,10 +43,6 @@ export default class ConfigHelper {
     return sessionStorage.getItem(SessionStorageKeys.AuthApiUrl) || authApiUrl
   }
 
-  static getFileServerUrl () {
-    return `${import.meta.env.VUE_APP_FILE_SERVER_URL}`
-  }
-
   static getAuthWebUrl () {
     return sessionStorage.getItem(SessionStorageKeys.AuthWebUrl) || `${import.meta.env.VUE_APP_AUTH_WEB_URL}`
   }
