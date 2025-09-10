@@ -107,9 +107,8 @@
 </template>
 
 <script lang="ts">
-import { Ref, defineComponent, onBeforeUnmount, onMounted, reactive, ref, toRefs, watch } from '@vue/composition-api'
+import { Ref, defineComponent, onMounted, reactive, ref, toRefs, watch } from '@vue/composition-api'
 import { useTransactions } from '@/composables/Transaction/transactions-factory'
-import { useAccountChangeHandler } from '@/composables/Transaction/account-change-factory'
 import { BaseTableHeaderI } from '@/components/datatable/interfaces'
 import CommonUtils from '@/util/common-util'
 import ModalDialog from '@/components/common/ModalDialog.vue'
@@ -133,7 +132,6 @@ export default defineComponent({
     const csvErrorTextMaxExceeded = 'You have exceeded the maximum of 100,000 records for your CSV export. Please refine your search and try again.'
     const csvErrorDialogText = ref(csvErrorTextBasic)
 
-    const { setAccountChangedHandler, beforeDestroy } = useAccountChangeHandler()
     const { clearAllFilters, getTransactionReport, loadTransactionList, setViewAll, defaultSearchToOneYear } = useTransactions()
 
     const state = reactive({
@@ -173,7 +171,6 @@ export default defineComponent({
     })
 
     const initialize = () => {
-      setAccountChangedHandler(initialize)
       setViewAll(props.extended)
       clearAllFilters(true)
       defaultSearchToOneYear()
@@ -198,7 +195,6 @@ export default defineComponent({
     onMounted(() => {
       initialize()
     })
-    onBeforeUnmount(() => { beforeDestroy() })
 
     return {
       ...toRefs(state),

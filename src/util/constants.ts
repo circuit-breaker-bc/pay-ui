@@ -145,7 +145,6 @@ export enum PatchActions {
 }
 
 export enum Account {
-    // ANONYMOUS = 'ANONYMOUS',
     PREMIUM = 'PREMIUM',
     BASIC = 'BASIC',
     STAFF = 'STAFF',

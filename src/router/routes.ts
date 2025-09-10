@@ -157,7 +157,8 @@ const routes: Array<RouteConfig> = [
     name: 'transactions',
     component: TransactionView,
     meta: {
-      requiresAuth: true
+      requiresAuth: true,
+      allowedRoles: [Role.ViewAllTransactions]
     }
   }
 ]
