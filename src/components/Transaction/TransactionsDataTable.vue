@@ -378,7 +378,7 @@ export default defineComponent({
     headers: { default: [] as BaseTableHeaderI[] }
   },
   emits: ['isDownloadingReceipt'],
-  setup (props, { emit, root } ) {
+  setup (props, { emit, root }) {
     // refs
     const state = reactive({
       expandedRows: [] as number[],
