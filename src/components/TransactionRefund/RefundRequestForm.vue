@@ -168,6 +168,7 @@
                     v-model="refundFormData.notificationEmail"
                     :rules="formRules.notificationEmail"
                     :disabled="formDisabled"
+                    maxlength="100"
                     type="email"
                     hint="Defaults to account email. Enter an email if missing, or to use a different address"
                     persistent-hint
@@ -185,6 +186,7 @@
                     v-model="refundFormData.reasonsForRefund"
                     :rules="formRules.reasonsForRefund"
                     :disabled="formDisabled"
+                    maxlength="250"
                     placeholder="Enter Reasons for Refund"
                     hint="The reason will be displayed in client's notification email when refund is approved"
                     persistent-hint
@@ -201,6 +203,7 @@
                     required
                     v-model="refundFormData.staffComment"
                     :disabled="formDisabled"
+                    maxlength="250"
                     placeholder="Enter Staff Comment (Optional)"
                     hint="Only viewable by staff"
                     persistent-hint

@@ -33,6 +33,7 @@
           :is-processing="isProcessing"
           :message="message"
           @onProceedToConfirm="onProceedToConfirm"
+          @onProceedToRequestForm="onProceedToRequestForm"
         />
       </div>
     </v-container>
@@ -145,7 +146,7 @@ export default defineComponent({
         invoiceReferenceId: invoice.references?.find(f => f.statusCode === 'COMPLETED')?.invoiceNumber,
         transactionAmount: invoice.total || 0,
         applicationName: getProductDisplayName(invoice.corpTypeCode),
-        applicationType: null,
+        applicationType: invoice.lineItems?.[0]?.description,
         businessIdentifier: invoice.businessIdentifier,
         applicationDetails: invoice.details,
         invoiceStatusCode: invoice.statusCode,
@@ -219,6 +220,11 @@ export default defineComponent({
       state.refundFormStage = RefundRequestStage.DATA_VALIDATED
     }
 
+    function onProceedToRequestForm () {
+      state.refundFormStage = RefundRequestStage.REQUEST_FORM
+      state.message = null
+    }
+
     async function onProceedToConfirm () {
       try {
         state.isProcessing = true
@@ -247,6 +253,7 @@ export default defineComponent({
       RefundRequestStage,
       onProceedToReview,
       onProceedToConfirm,
+      onProceedToRequestForm,
       getProductDisplayName,
       isPartialRefundAllowed
     }
