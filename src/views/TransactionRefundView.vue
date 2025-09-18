@@ -249,7 +249,7 @@ export default defineComponent({
       }
     }
 
-    function onCancel() {
+    function onCancel () {
       root.$router?.back()
     }
 

@@ -377,7 +377,7 @@ export default defineComponent({
       calculateTotalRequestedAmount()
     }
 
-    function onCancel() {
+    function onCancel () {
       emit('onCancel')
     }
 
