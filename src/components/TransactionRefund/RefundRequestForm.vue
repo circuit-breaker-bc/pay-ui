@@ -219,6 +219,7 @@
       <v-btn
         large
         outlined
+        @click="onCancel"
         color="primary"
         class="mt-10"
       >
@@ -376,12 +377,17 @@ export default defineComponent({
       calculateTotalRequestedAmount()
     }
 
+    function onCancel() {
+      emit('onCancel')
+    }
+
     return {
       ...toRefs(state),
       RefundType,
       getRequestedAmountRules,
       onReviewBtnClick,
       onRefundEntireItemRequestedChange,
+      onCancel,
       calculateTotalRequestedAmount,
       onRefundTypeChange,
       formatAmount: CommonUtils.formatAmount,

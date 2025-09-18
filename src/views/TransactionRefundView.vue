@@ -24,6 +24,7 @@
           :previous-refunded-amount="previousRefundedAmount"
           :is-partial-refund-allowed="isPartialRefundAllowed"
           :invoice-payment-method="invoicePaymentMethod"
+          @onCancel="onCancel"
           @onProceedToReview="onProceedToReview"
         />
         <RefundReviewForm v-show="refundFormStage === RefundRequestStage.DATA_VALIDATED"
@@ -72,7 +73,7 @@ export default defineComponent({
       required: false
     }
   },
-  setup (props) {
+  setup (props, { root }) {
     const state = reactive({
       dataLoading: 0,
       paymentData: {
@@ -248,6 +249,10 @@ export default defineComponent({
       }
     }
 
+    function onCancel() {
+      root.$router?.back()
+    }
+
     return {
       ...toRefs(state),
       RefundRequestStage,
@@ -255,7 +260,8 @@ export default defineComponent({
       onProceedToConfirm,
       onProceedToRequestForm,
       getProductDisplayName,
-      isPartialRefundAllowed
+      isPartialRefundAllowed,
+      onCancel
     }
   }
 })
