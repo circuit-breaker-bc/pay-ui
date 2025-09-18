@@ -45,7 +45,7 @@ exports[`RefundReviewForm.vue > matches snapshot 1`] = `
   </v-card-stub>
   <!---->
   <div data-v-6c50169d="" class="d-flex justify-space-between flex-wrap">
-    <v-btn-stub data-v-6c50169d="" color="primary" outlined="true" tag="button" activeclass="" large="true" type="button" class="mt-10"><span data-v-6c50169d="">Cancel</span></v-btn-stub>
+    <v-btn-stub data-v-6c50169d="" color="primary" outlined="true" tag="button" activeclass="" large="true" type="button" class="mt-10"><span data-v-6c50169d="">Back</span></v-btn-stub>
     <v-btn-stub data-v-6c50169d="" color="primary" tag="button" activeclass="" large="true" type="button" class="mt-10"><span data-v-6c50169d="">Submit Refund Request</span></v-btn-stub>
   </div>
 </div>"

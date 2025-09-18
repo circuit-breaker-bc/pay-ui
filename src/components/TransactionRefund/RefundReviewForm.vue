@@ -123,10 +123,11 @@
       <v-btn
         large
         outlined
+        @click="onBackBtnClick()"
         color="primary"
         class="mt-10"
       >
-        <span>Cancel</span>
+        <span>Back</span>
       </v-btn>
       <v-btn
         large
@@ -170,10 +171,15 @@ export default defineComponent({
       emit('onProceedToConfirm')
     }
 
+    function onBackBtnClick () {
+      emit('onProceedToRequestForm')
+    }
+
     return {
       formatAmount: CommonUtils.formatAmount,
       formatUtcToPacificDate: CommonUtils.formatUtcToPacificDate,
       onConfirmBtnClick,
+      onBackBtnClick,
       getRefundMethodText: CommonUtils.getRefundMethodText,
       RefundType
     }

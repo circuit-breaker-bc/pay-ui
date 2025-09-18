@@ -24,6 +24,7 @@
           :previous-refunded-amount="previousRefundedAmount"
           :is-partial-refund-allowed="isPartialRefundAllowed"
           :invoice-payment-method="invoicePaymentMethod"
+          @onCancel="onCancel"
           @onProceedToReview="onProceedToReview"
         />
         <RefundReviewForm v-show="refundFormStage === RefundRequestStage.DATA_VALIDATED"
@@ -33,6 +34,7 @@
           :is-processing="isProcessing"
           :message="message"
           @onProceedToConfirm="onProceedToConfirm"
+          @onProceedToRequestForm="onProceedToRequestForm"
         />
       </div>
     </v-container>
@@ -71,7 +73,7 @@ export default defineComponent({
       required: false
     }
   },
-  setup (props) {
+  setup (props, { root }) {
     const state = reactive({
       dataLoading: 0,
       paymentData: {
@@ -145,7 +147,7 @@ export default defineComponent({
         invoiceReferenceId: invoice.references?.find(f => f.statusCode === 'COMPLETED')?.invoiceNumber,
         transactionAmount: invoice.total || 0,
         applicationName: getProductDisplayName(invoice.corpTypeCode),
-        applicationType: null,
+        applicationType: invoice.lineItems?.[0]?.description,
         businessIdentifier: invoice.businessIdentifier,
         applicationDetails: invoice.details,
         invoiceStatusCode: invoice.statusCode,
@@ -219,6 +221,11 @@ export default defineComponent({
       state.refundFormStage = RefundRequestStage.DATA_VALIDATED
     }
 
+    function onProceedToRequestForm () {
+      state.refundFormStage = RefundRequestStage.REQUEST_FORM
+      state.message = null
+    }
+
     async function onProceedToConfirm () {
       try {
         state.isProcessing = true
@@ -242,13 +249,19 @@ export default defineComponent({
       }
     }
 
+    function onCancel () {
+      root.$router?.back()
+    }
+
     return {
       ...toRefs(state),
       RefundRequestStage,
       onProceedToReview,
       onProceedToConfirm,
+      onProceedToRequestForm,
       getProductDisplayName,
-      isPartialRefundAllowed
+      isPartialRefundAllowed,
+      onCancel
     }
   }
 })

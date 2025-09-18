@@ -431,7 +431,8 @@ export enum Product {
     RPPR = 'RPPR',
     RPT = 'RPT',
     STRR = 'STRR',
-    VS = 'VS'
+    VS = 'VS',
+    NRO = 'NRO'
 }
 
 export const chequeRefundCodes = ChequeRefundStatus.reduce((acc, status) => {
