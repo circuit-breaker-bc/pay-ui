@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 const { t } = useI18n()
 
 definePageMeta({
@@ -27,6 +28,8 @@ function resetDate() {
 <template>
   <div class="py-10 space-y-10">
     <h1>{{ $t('page.home.h1') }}</h1>
+
+    
 
     <div>range: {{ dateRange }}</div>
     <div>date: {{ date }}</div>

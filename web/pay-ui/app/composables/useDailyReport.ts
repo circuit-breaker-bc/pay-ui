@@ -1,17 +1,15 @@
 import CommonUtils from '@/utils/common-util'
 import { useRoutingSlip } from '@/composables/useRoutingSlip'
 
-export function useDailyReport() {
+export function useDailyReport () {
   const selectedDate = ref<string | null>(null)
   const showCalendar = ref<boolean>(false)
   const isDownloading = ref<boolean>(false)
 
   const { getDailyReportByDate } = useRoutingSlip()
 
-  async function getDailyReport() {
-    if (!selectedDate.value) {
-      return
-    }
+  async function getDailyReport () {
+    if (!selectedDate.value) return
 
     isDownloading.value = true
 
@@ -23,13 +21,14 @@ export function useDailyReport() {
           '='
         )
 
-        const fileName
-          = contentDispArr.length && contentDispArr[1]
+        const fileName =
+          contentDispArr.length && contentDispArr[1]
             ? contentDispArr[1]
             : 'bcregistry-daily-report'
 
         CommonUtils.fileDownload(response.data, fileName, downloadType)
       } else {
+        // eslint-disable-next-line no-console
         console.error(response)
       }
     } finally {
@@ -38,7 +37,7 @@ export function useDailyReport() {
     }
   }
 
-  function toggleCalendar(value: boolean) {
+  function toggleCalendar (value: boolean) {
     showCalendar.value = value
   }
 

@@ -1,11 +1,14 @@
-import type { Invoice } from '~/interfaces/invoice'
-import { debounce } from 'es-toolkit'
+import CommonUtils from '@/utils/common-util'
+import ConfigHelper from '@/utils/config-helper'
+import debounce from '@/utils/debounce'
 import { useLoader } from '@/composables/common/useLoader'
 import { useStatusList } from '@/composables/common/useStatusList'
 import { useRoutingSlip } from '@/composables/useRoutingSlip'
-import { chequeRefundCodes, ChequeRefundStatus } from '@/utils/constants'
+import { chequeRefundCodes, ChequeRefundStatus, SlipStatus } from '@/utils/constants'
 
-export async function useSearch() {
+export function useSearch (isLibraryMode = false) {
+  const router = useRouter()
+
   const {
     searchRoutingSlipTableHeaders,
     resetSearchParams,
@@ -18,10 +21,10 @@ export async function useSearch() {
   } = useRoutingSlip()
 
   // Adding openFromAuth=true queryparams so that we can build breadcrumbs
-  // Eg of a typical breadcrumb flow =
-  // Staff Dashboard -> FAS Dashboard -> View Routing Slip: test -> View Routing Slip: testchild
+  // Eg of a typical breadcrumb flow = Staff Dashboard -> FAS Dashboard -> View Routing Slip: test -> View Routing Slip: testchild
+  const fasUrl = `${ConfigHelper.getFasWebUrl()}?openFromAuth=true`
 
-  const { statusLabel } = await useStatusList(reactive({ value: '' }), { emit: () => {} })
+  const { statusLabel } = useStatusList(reactive({ value: '' }), {})
   const { isLoading, toggleLoading } = useLoader()
 
   const showExpandedFolio = ref<string[]>([])
@@ -30,7 +33,7 @@ export async function useSearch() {
   const searchParamsChanged = ref(false)
   const reachedEnd = ref(false)
 
-  function updateSearchFilter(updates: Record<string, string | number | boolean | object | null>) {
+  function updateSearchFilter (updates: any) {
     searchRoutingSlipParams.value = {
       ...searchRoutingSlipParams.value,
       ...defaultParams,
@@ -40,7 +43,7 @@ export async function useSearch() {
     reachedEnd.value = false
   }
 
-  async function searchNow() {
+  async function searchNow () {
     toggleLoading()
     await searchRoutingSlip()
     searchParamsChanged.value = false
@@ -56,14 +59,16 @@ export async function useSearch() {
 
   const debouncedSearch = debounce(() => {
     searchNow()
-  }, 500)
+  })
+
+  const appendQueryParamsIfNeeded = CommonUtils.appendQueryParamsIfNeeded
 
   // get label of status
-  function getStatusLabel(code: string) {
+  function getStatusLabel (code: string) {
     return statusLabel(code)
   }
 
-  async function clearFilter() {
+  async function clearFilter () {
     toggleLoading()
     resetSearchParams()
     await searchRoutingSlip()
@@ -71,7 +76,7 @@ export async function useSearch() {
     toggleLoading()
   }
 
-  function toggleFolio(id: string) {
+  function toggleFolio (id: string) {
     //  to show and hide multiple folio on click
     // remove from array if already existing else add to array
     if (showExpandedFolio.value.includes(id)) {
@@ -83,7 +88,7 @@ export async function useSearch() {
     }
   }
 
-  function toggleCheque(id: string) {
+  function toggleCheque (id: string) {
     //  to show and hide multiple folio on click
     // remove from array if already existing else add to array
     if (showExpandedCheque.value.includes(id)) {
@@ -95,12 +100,12 @@ export async function useSearch() {
     }
   }
 
-  function formatFolioResult(invoices: Invoice[], businessIdentifier: string | null) {
+  function formatFolioResult (invoices: any[], businessIdentifier: string | null) {
     // to make sure not updating on keyup
     if (
-      !searchParamsChanged.value
-      && businessIdentifier
-      && businessIdentifier !== ''
+      !searchParamsChanged.value &&
+      businessIdentifier &&
+      businessIdentifier !== ''
     ) {
       return [businessIdentifier]
     }
@@ -112,20 +117,31 @@ export async function useSearch() {
     return folios.length ? folios : ['-']
   }
 
-  const getNext = async () => {
-    if (isLoading.value) {
-      return
+  function navigateTo (routingSlipNumber: string) : void {
+    if (isLibraryMode) {
+      // This scenario would hit when the FAS Search is displayed as a plugin in Staff dashboard
+      // we append queryparams so that we can persist breadcrumbs across different components and refresh issue
+      // Adding viewFromAuth=true queryparams so that we can build breadcrumbs
+      // Eg of a typical breadcrumb flow = Staff Dashboard -> View Routing Slip: test -> View Routing Slip: testchild
+      window.location.href = `${ConfigHelper.getFasWebUrl()}view-routing-slip/${routingSlipNumber}?viewFromAuth=true`
+    } else {
+      //temp
+      //context.root.$router.push(appendQueryParamsIfNeeded(`/view-routing-slip/${routingSlipNumber}`, context.root.$route))
+      router.push(appendQueryParamsIfNeeded(`/view-routing-slip/${routingSlipNumber}`, router.currentRoute.value))
     }
+  }
+
+  const getNext = async () => {
+    if (isLoading.value) return
     reachedEnd.value = await infiniteScrollCallback()
   }
 
-  function getRefundStatusText(statusCode: string | null): string | null {
-    const refundStatus = ChequeRefundStatus
-      .find(item => item.code === statusCode)?.text || chequeRefundCodes.PROCESSING || null
+  function getRefundStatusText (statusCode: string | null): string | null {
+    const refundStatus = ChequeRefundStatus.find(item => item.code === statusCode)?.text || chequeRefundCodes.PROCESSING || null
     return refundStatus
   }
 
-  function getStatusFromRefundStatus(statusCode: string): SlipStatus {
+  function getStatusFromRefundStatus (statusCode: string): SlipStatus {
     if (statusCode === chequeRefundCodes.PROCESSING) {
       return SlipStatus.REFUNDREQUEST
     } else {
@@ -146,10 +162,9 @@ export async function useSearch() {
     toggleFolio,
     toggleCheque,
     isLoading,
+    navigateTo,
     getNext,
     getRefundStatusText,
-    getStatusFromRefundStatus,
-    updateSearchFilter,
-    clearFilter
+    updateSearchFilter
   }
 }

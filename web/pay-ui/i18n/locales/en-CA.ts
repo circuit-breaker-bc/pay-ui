@@ -118,24 +118,7 @@ export default {
     },
     viewRoutingSlip: {
       title: 'View Routing Slip - BC Business Registry FAS',
-      h1: 'View Routing Slip: {id}',
-      subtitle: 'Manage, and review details for this routing slip',
-      routingSlipInformation: {
-        title: 'Routing Slip Information',
-        description: 'View and manage the core details of this routing slip.'
-      },
-      paymentInformation: {
-        title: 'Payment Information',
-        description: 'View balances, and detail information of the payment method.'
-      },
-      linkingRoutingSlip: {
-        title: 'Linking Routing Slip',
-        description: 'Link this routing slip to another routing slip to transfer funds, and merge payment informations.'
-      },
-      routingSlipTransaction: {
-        title: 'Routing Slip Transaction',
-        description: 'Manage, track and view the routing slip\'s transactions'
-      }
+      h1: 'View Routing Slip: {id}'
     },
     home: {
       title: 'Index Page - Pay UI',
@@ -150,10 +133,8 @@ export default {
     entityNumberHelp: 'Example: BC1234567, CP1234567, FM1234567 or 123456',
     pleaseSearchForRoutingSlip: 'Please search for and select a Routing Slip ID',
     routingSlipSearchDisplay: '{boldStart}{number}{boldEnd} - {date} - Current Balance: ${amount}',
-    searchStartMessage: 'Search routing slips by entering one of the value above. '
-      + 'Click on "columns to show" to add or get rid of additional values.',
-    searchNoResult: '{h4Start}No Results{h4End}{pStart}None of the routing slips matched this search. '
-      + 'Try another search.{pEnd}'
+    searchStartMessage: "Search routing slips by entering one of the value above. Click on \"columns to show\" to add or get rid of additional values.",
+    searchNoResult: '{h4Start}No Results{h4End}{pStart}None of the routing slips matched this search. Try another search.{pEnd}'
   },
   validation: {
     payment: {
